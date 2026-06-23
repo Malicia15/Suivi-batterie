@@ -2,7 +2,9 @@ import { neon } from '@neondatabase/serverless';
 import type { Battery, BatteryListItem, BatteryWithInterventions, DiagnosticFormData } from './types';
 
 function getDb() {
-  return neon(process.env.POSTGRES_URL!);
+  const url = process.env.POSTGRES_URL || process.env.DATABASE_URL;
+  if (!url) throw new Error('POSTGRES_URL ou DATABASE_URL manquant');
+  return neon(url);
 }
 
 export async function setupSchema() {
