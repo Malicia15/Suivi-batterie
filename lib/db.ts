@@ -84,7 +84,7 @@ export async function setupSchema() {
 
 export async function listBatteries(): Promise<BatteryListItem[]> {
   const sql = getDb();
-  return sql`
+  const rows = await sql`
     SELECT
       b.*,
       COUNT(i.id)::int AS intervention_count,
@@ -95,19 +95,21 @@ export async function listBatteries(): Promise<BatteryListItem[]> {
     LEFT JOIN interventions i ON i.serie = b.serie
     GROUP BY b.serie
     ORDER BY b.created_at DESC
-  ` as Promise<BatteryListItem[]>;
+  `;
+  return rows as unknown as BatteryListItem[];
 }
 
 export async function getBattery(serie: string): Promise<BatteryWithInterventions | null> {
   const sql = getDb();
-  const batteries = await sql<Battery[]>`SELECT * FROM batteries WHERE serie = ${serie}`;
-  if (!batteries[0]) return null;
+  const rows = await sql`SELECT * FROM batteries WHERE serie = ${serie}`;
+  const battery = rows[0] as unknown as Battery;
+  if (!battery) return null;
 
   const interventions = await sql`
     SELECT * FROM interventions WHERE serie = ${serie} ORDER BY created_at DESC
   `;
 
-  return { ...batteries[0], interventions: interventions as BatteryWithInterventions['interventions'] };
+  return { ...battery, interventions: interventions as unknown as BatteryWithInterventions['interventions'] };
 }
 
 export async function createBattery(data: DiagnosticFormData): Promise<void> {
