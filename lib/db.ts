@@ -101,12 +101,33 @@ export async function listBatteries(): Promise<BatteryListItem[]> {
 
 export async function getBattery(serie: string): Promise<BatteryWithInterventions | null> {
   const sql = getDb();
-  const rows = await sql`SELECT * FROM batteries WHERE serie = ${serie}`;
+  const rows = await sql`
+    SELECT serie, code, modele, chimie, vehicule,
+      date_mep::text AS date_mep,
+      cap_nom, tension_nom, poids, longueur, largeur, hauteur, kwh, modules,
+      created_at::text AS created_at
+    FROM batteries WHERE serie = ${serie}
+  `;
   const battery = rows[0] as unknown as Battery;
   if (!battery) return null;
 
   const interventions = await sql`
-    SELECT * FROM interventions WHERE serie = ${serie} ORDER BY created_at DESC
+    SELECT id, serie,
+      date::text AS date,
+      technicien, site, detenteur, motif, km, cycles,
+      pre_histo, pre_immerge, pre_accident, pre_brule, pre_brule_depose,
+      pre_immerge_depose, pre_endommage_depose,
+      vis_chaleur, vis_fumee, vis_odeur, vis_bruit, vis_incendie, vis_gonfle,
+      vis_fuite_elec, vis_superficiel, vis_connect_tordus, vis_corrosion,
+      vis_rayures, vis_autres, autres_signes,
+      diag_possible, com_possible, anomalie,
+      soh, soc, tension, resistance, temp, outil,
+      secu_connect, secu_purge, secu_stockage,
+      observations, decision,
+      prochaine::text AS prochaine,
+      responsable,
+      created_at::text AS created_at
+    FROM interventions WHERE serie = ${serie} ORDER BY created_at DESC
   `;
 
   return { ...battery, interventions: interventions as unknown as BatteryWithInterventions['interventions'] };
