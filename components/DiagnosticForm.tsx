@@ -117,8 +117,15 @@ export default function DiagnosticForm() {
   const saine = allSigned && !critique && !nonCritique;
 
   async function handleSubmit() {
-    if (!form.serie.trim() || !form.modele.trim() || !form.vehicule.trim() || !form.date.trim() || !form.technicien.trim() || !form.decision.trim()) {
-      show('⚠️ Remplissez les champs obligatoires (*)', 'error');
+    const missing: string[] = [];
+    if (!form.serie.trim()) missing.push('N° de série');
+    if (!form.modele.trim()) missing.push('Modèle batterie');
+    if (!form.vehicule.trim()) missing.push('Véhicule');
+    if (!form.date.trim()) missing.push("Date d'intervention");
+    if (!form.technicien.trim()) missing.push('Technicien');
+    if (!form.decision.trim()) missing.push('Décision finale');
+    if (missing.length > 0) {
+      show('⚠️ Champs manquants : ' + missing.join(', '), 'error');
       return;
     }
     setLoading(true);
