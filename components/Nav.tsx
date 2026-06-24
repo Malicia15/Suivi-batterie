@@ -9,7 +9,9 @@ export default function Nav() {
 
   return (
     <nav>
-      <Image src="/logo.png" alt="Jaqu'auto" height={36} width={120} style={{ objectFit: 'contain' }} priority />
+      <div style={{ background: 'white', borderRadius: 6, padding: '3px 10px', display: 'flex', alignItems: 'center' }}>
+        <Image src="/logo.png" alt="Jaqu'auto" height={30} width={100} style={{ objectFit: 'contain' }} priority />
+      </div>
       <h1>Suivi Batteries Traction</h1>
       <div className="nav-tabs">
         <Link href="/parc" className={`nav-tab${path === '/parc' || path === '/' ? ' active' : ''}`}>
