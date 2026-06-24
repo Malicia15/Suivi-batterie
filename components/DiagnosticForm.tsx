@@ -24,6 +24,15 @@ const SIGNES_NON_CRITIQUES = ['vis_superficiel', 'vis_connect_tordus', 'vis_corr
 
 type FormKey = keyof DiagnosticFormData;
 
+function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
+  return (
+    <div className="field">
+      <label>{label}{required && <span className="required-star"> *</span>}</label>
+      {children}
+    </div>
+  );
+}
+
 function useToast() {
   const [toast, setToast] = useState<{ msg: string; type: string } | null>(null);
   const show = (msg: string, type = 'success') => {
@@ -131,13 +140,6 @@ export default function DiagnosticForm() {
       setLoading(false);
     }
   }
-
-  const Field = ({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) => (
-    <div className="field">
-      <label>{label}{required && <span className="required-star"> *</span>}</label>
-      {children}
-    </div>
-  );
 
   return (
     <>
